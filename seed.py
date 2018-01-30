@@ -67,7 +67,13 @@ def load_ratings():
 
     Rating.query.delete()
 
+    i = 0
+
     for row in open("seed_data/u.data"):
+        i += 1
+        if i % 1000 == 0:
+            print i
+
         row = row.rstrip()
         user_id, movie_id, score, timestamp = row.split()
 
@@ -86,6 +92,9 @@ def set_val_user_id():
     # Get the Max user_id in the database
     result = db.session.query(func.max(User.user_id)).one()
     max_id = int(result[0])
+
+    # We dont need it for movies here bcoz we are not adding new movies
+    # We dont need ti for ratings because we are not over-writing the PK there
 
     # Set the value for the next user_id to be max_id + 1
     query = "SELECT setval('users_user_id_seq', :new_id)"

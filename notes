@@ -1,0 +1,10 @@
+>>> c_f = Movie.query.filter(Movie.title=="Cape Fear").all()
+>>> c_f
+[<Movie movie_id=218 title=Cape Fear>, <Movie movie_id=673 title=Cape Fear>]
+>>> c_f[0].released_at
+datetime.datetime(1991, 1, 1, 0, 0)
+>>> c_f[0].released_at.year
+1991
+>>> [m for m in c_f if m.released_at.year == 1962]
+[<Movie movie_id=673 title=Cape Fear>]
+>>>
