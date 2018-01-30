@@ -12,6 +12,7 @@ db = SQLAlchemy()
 ##############################################################################
 # Model definitions
 
+# u.user
 class User(db.Model):
     """User of ratings website."""
 
@@ -30,17 +31,19 @@ class User(db.Model):
 
 
 # Put your Movie and Rating model classes here.
+# u.item
 class Movie(db.Model):
     """Movie descriptions table"""
 
     __tablename__ = "movies"
 
     movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    title = db.Column(db.String(64), nullable=False)
+    title = db.Column(db.String(80), nullable=False)
     released_at = db.Column(db.DateTime, nullable=True)
-    imdb_url = db.Column(db.String(64), nullable=True)
+    imdb_url = db.Column(db.String(200), nullable=True)
 
 
+#u.data
 class Rating(db.Model):
     """Movie ratings table"""
 
