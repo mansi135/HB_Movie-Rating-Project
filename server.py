@@ -70,6 +70,31 @@ def individual_user(user_id):
 
     return render_template("user_details.html",user=user)
 
+
+@app.route('/movies')
+def display_movies():
+    """Displays list of movie titles"""
+
+    # query
+    movies = Movie.query.order_by('title').all()
+    #movies = db.session.query
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route('/movies/<movie_id>')
+def display_movie_detail(movie_id):
+    """Display individual movie's details"""
+
+    movie = Movie.query.filter_by(movie_id=movie_id).one()
+    ratings = Rating.query.filter_by(movie_id=movie_id).all()
+
+    return render_template("movie_details.html", movie=movie, ratings=ratings)
+
+
+# @app.route('/movies/<movie_id>', methods=["POST"])
+
+
+
 @app.route('/register')
 def display_registration_form():
     """Displays registration form"""
