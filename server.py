@@ -33,7 +33,44 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html",users=users)
 
-# @app.route('/users/<user_id>')
+
+@app.route('/users/<user_id>')
+def individual_user(user_id):
+
+    user = User.query.filter_by(user_id=user_id).one()
+
+
+    # Method-1
+    # all_ratings_objects = Rating.query.filter_by(user_id=user_id).all()
+
+    # movies_they_rated = []
+
+    # for rating_obj in all_ratings_objects:
+    #     movie_title = rating_obj.movie.title
+    #     movie_score = rating_obj.score
+    #     movies_they_rated.append((movie_title, movie_score))
+    #
+
+    #Method-2
+    all_ratings_objects = Rating.query.filter_by(user_id=user_id).all()
+    movies_they_rated = []
+
+    for rating_obj in all_ratings_objects:
+        movie_title = db.session.query(Movie.title).filter_by(movie_id=rating_obj.movie_id).one()
+        movie_score = rating_obj.score
+        movies_they_rated.append((movie_title, movie_score))
+
+
+    # Method-3
+   # all_ratings_objects = db.session.query(Movie.title, Rating.score).join(Rating).filter(Rating.user_id==user_id).all()
+
+    #movies_they_rated = all_ratings_objects
+
+
+
+
+
+    return render_template("user_details.html",age=user.age,zipcode=user.zipcode,movies_they_rated=movies_they_rated)
 
 @app.route('/register')
 def display_registration_form():
@@ -51,16 +88,58 @@ def handle_registration_form():
 
     user_exists = User.query.filter_by(email=email).first()
     if user_exists:
-        # flash message
+        flash('User already exists. Please register with another email address.')
         print "user already exists"
     else:
         new_user = User(email=email, password=password)
         db.session.add(new_user)
         db.session.commit()
-        # flash message
+        flash('User was successfully added to the database.')
         print "successfully added"
 
     return redirect('/')
+
+
+@app.route('/login')
+def show_login_form():
+    """Show login form"""
+
+    return render_template("login-form.html")
+
+
+@app.route('/login-check')
+def login_check():
+    """Login check"""
+
+
+    email = request.args.get('email')
+    password = request.args.get('password')
+
+    existing_user = User.query.filter_by(email=email).first()
+
+
+    if not existing_user:
+        flash('Please register first.')
+        return redirect('/register')
+    elif existing_user.email == email and existing_user.password != password:
+        flash('The password is incorrect. Please check the spelling.')
+        return redirect('/login')
+    elif existing_user.email == email and existing_user.password == password:
+        flash('You are logged in.')
+        session['user_id'] = existing_user.user_id
+        print session['user_id']
+        return redirect("/")
+
+
+@app.route('/logout')
+def logout():
+    """Logout User"""
+
+    #del session['user_id']
+    session.clear()
+    flash("You were logged out.")
+
+    return redirect("/")
 
 
 if __name__ == "__main__":
