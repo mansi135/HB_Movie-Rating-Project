@@ -6,14 +6,14 @@
 
     <h2>User Ratings</h2>
 
-    <p>Age: {{ age }}</p>
+    <p>Age: {{ user.age }}</p>
 
-    <p>Zip code: {{ zipcode }}</p>
+    <p>Zip code: {{ user.zipcode }}</p>
 
     <ul>
-        {% for title, score in movies_they_rated%}
-          <li>Title: {{ title }}; Score: {{ score }}
-          </li>
+
+        {% for rating in user.ratings %}
+        <li> Title : {{ rating.movie.title }}; Score : {{ rating.score }} </li>
         {% endfor %}
     </ul>
 

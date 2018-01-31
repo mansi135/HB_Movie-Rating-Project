@@ -52,25 +52,23 @@ def individual_user(user_id):
     #
 
     #Method-2
-    all_ratings_objects = Rating.query.filter_by(user_id=user_id).all()
-    movies_they_rated = []
+    # all_ratings_objects = Rating.query.filter_by(user_id=user_id).all()
+    # movies_they_rated = []
 
-    for rating_obj in all_ratings_objects:
-        movie_title = db.session.query(Movie.title).filter_by(movie_id=rating_obj.movie_id).one()
-        movie_score = rating_obj.score
-        movies_they_rated.append((movie_title, movie_score))
+    # for rating_obj in all_ratings_objects:
+    #     movie_title = db.session.query(Movie.title).filter_by(movie_id=rating_obj.movie_id).one()
+    #     movie_score = rating_obj.score
+    #     movies_they_rated.append((movie_title, movie_score))
 
 
     # Method-3
-   # all_ratings_objects = db.session.query(Movie.title, Rating.score).join(Rating).filter(Rating.user_id==user_id).all()
+    # all_ratings_objects = db.session.query(Movie.title, Rating.score).join(Rating).filter(Rating.user_id==user_id).all()
+    # movies_they_rated = all_ratings_objects
 
-    #movies_they_rated = all_ratings_objects
-
-
-
+    # return render_template("user_details.html",age=user.age,zipcode=user.zipcode,movies_they_rated=movies_they_rated)
 
 
-    return render_template("user_details.html",age=user.age,zipcode=user.zipcode,movies_they_rated=movies_they_rated)
+    return render_template("user_details.html",user=user)
 
 @app.route('/register')
 def display_registration_form():
@@ -90,6 +88,9 @@ def handle_registration_form():
     if user_exists:
         flash('User already exists. Please register with another email address.')
         print "user already exists"
+
+        return redirect('/register')
+
     else:
         new_user = User(email=email, password=password)
         db.session.add(new_user)
@@ -97,7 +98,7 @@ def handle_registration_form():
         flash('User was successfully added to the database.')
         print "successfully added"
 
-    return redirect('/')
+        return redirect('/')
 
 
 @app.route('/login')
@@ -107,7 +108,7 @@ def show_login_form():
     return render_template("login-form.html")
 
 
-@app.route('/login-check')
+@app.route('/login', methods=['POST'])
 def login_check():
     """Login check"""
 
