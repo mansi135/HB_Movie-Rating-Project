@@ -25,13 +25,15 @@ def index():
 
     return render_template("homepage.html")
 
+
 @app.route('/users')
 def user_list():
     """Gives a list of all users"""
 
    # users = db.session.query(User).all()
     users = User.query.all()
-    return render_template("user_list.html",users=users)
+
+    return render_template("user_list.html", users=users)
 
 
 @app.route('/users/<user_id>')
@@ -67,8 +69,7 @@ def individual_user(user_id):
 
     # return render_template("user_details.html",age=user.age,zipcode=user.zipcode,movies_they_rated=movies_they_rated)
 
-
-    return render_template("user_details.html",user=user)
+    return render_template("user_details.html", user=user)
 
 
 @app.route('/movies')
@@ -86,13 +87,33 @@ def display_movie_detail(movie_id):
     """Display individual movie's details"""
 
     movie = Movie.query.filter_by(movie_id=movie_id).one()
-    ratings = Rating.query.filter_by(movie_id=movie_id).all()
+    #ratings = Rating.query.filter_by(movie_id=movie_id).all()
 
-    return render_template("movie_details.html", movie=movie, ratings=ratings)
+    # return render_template("movie_details.html", movie=movie, ratings=ratings)
+    return render_template("movie_details.html", movie=movie)
 
 
-# @app.route('/movies/<movie_id>', methods=["POST"])
+@app.route('/rate_movie', methods=["POST"])
+def rate_movie():
+    """Lets logged in user rate/update rating for the movie"""
 
+    user_id = session['user_id']
+    movie_id = request.form.get('movie_id')
+
+    user_rating = request.form.get("ratings")
+
+    # check if user has rated that movie
+    user_rated_movie = Rating.query.filter_by(movie_id=movie_id, user_id=user_id).first()
+
+    if user_rated_movie:
+        user_rated_movie.score = user_rating
+    else:
+        new_entry = Rating(movie_id=movie_id, user_id=user_id, score=user_rating)
+        db.session.add(new_entry)
+    db.session.commit()
+
+    return redirect("/movies/{}".format(movie_id))
+    #return redirect("/movies/{movie_id}".format(movie_id=movie_id))
 
 
 @app.route('/register')
@@ -138,8 +159,8 @@ def login_check():
     """Login check"""
 
 
-    email = request.args.get('email')
-    password = request.args.get('password')
+    email = request.form.get('email')
+    password = request.form.get('password')
 
     existing_user = User.query.filter_by(email=email).first()
 
@@ -152,6 +173,7 @@ def login_check():
         return redirect('/login')
     elif existing_user.email == email and existing_user.password == password:
         flash('You are logged in.')
+        # probably bug here
         session['user_id'] = existing_user.user_id
         print session['user_id']
         return redirect("/")
