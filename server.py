@@ -90,6 +90,7 @@ def display_movie_detail(movie_id):
     #ratings = Rating.query.filter_by(movie_id=movie_id).all()
 
     # return render_template("movie_details.html", movie=movie, ratings=ratings)
+    # , ordered_movies=movie.ratings. # sort by ratings
     return render_template("movie_details.html", movie=movie)
 
 
@@ -106,10 +107,12 @@ def rate_movie():
     user_rated_movie = Rating.query.filter_by(movie_id=movie_id, user_id=user_id).first()
 
     if user_rated_movie:
-        user_rated_movie.score = user_rating
+        user_rated_movie.score = user_rating #Update
+        flash("You have successfully updated your rating")
     else:
         new_entry = Rating(movie_id=movie_id, user_id=user_id, score=user_rating)
-        db.session.add(new_entry)
+        db.session.add(new_entry)           # Add new entry
+        flash("You have successfully added your rating")
     db.session.commit()
 
     return redirect("/movies/{}".format(movie_id))

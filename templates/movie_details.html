@@ -16,7 +16,7 @@
     <p>Ratings:</p>
     <ul>
         {% for rating in movie.ratings %}
-            <li><a href="../users/{{ rating.user_id }}">User ({{ rating.user_id }})   </a>:   {{ rating.score }}</li>
+            <li><a href="/users/{{ rating.user_id }}">User ({{ rating.user_id }})   </a>:   {{ rating.score }}</li>
         {% endfor %}
     </ul>
 
